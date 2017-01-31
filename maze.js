@@ -3,7 +3,7 @@ var wallWidth = 4;
 var height, width;
 var maze = [];
 
-function randomize() {
+function dfs_randomize() {
 	for(let i = 0; i < width*height; i++) {
 		maze[i] = [];
 	}
@@ -39,7 +39,46 @@ function randomize() {
 	}
 }
 
-function generateMaze() {
+function kruskal_randomise() {
+	var set = [];
+	var walls = [];
+
+	// Make a list of all walls
+	for(let i = 0; i < width*height; i++) {
+		maze[i] = [];
+		set[i] = i;
+		if((i+1)%width != 0)			// right
+			walls.push([i, i+1]);
+		if(i+width < height*width)		// down
+			walls.push([i, i+width]);
+	}
+
+	// Shuffle the walls
+	for(let i = walls.length; i > 1; i--) {
+		var index = Math.floor((Math.random() * i));
+		var temp = walls[i-1];
+		walls[i-1] = walls[index];
+		walls[index] = temp;
+	}
+
+	// Start removing walls using kruskals algorithm
+	while(walls.length > 0) {
+		var wall = walls.pop();
+		// If the wall combines two separate sets then remove it
+		if(!(set[wall[0]] == set[wall[1]])) {
+			var change = set[wall[0]];
+			// Update the sets
+			for(let i = 0; i < set.length; i++) {
+				if(set[i] == change)
+					set[i] = set[wall[1]];
+			}
+			maze[wall[0]].push(wall[1]);
+			maze[wall[1]].push(wall[0]); 
+		}
+	}
+}
+
+function generateMaze(type) {
 	height = Number(document.getElementById("height").value);
 	width = Number(document.getElementById("width").value);
 	if(height < 1 || width < 1) {
@@ -48,7 +87,10 @@ function generateMaze() {
 	}
 	else
 		document.getElementById("maze").innerHTML = "";
-	randomize();
+	if(type == "kruskal")
+		kruskal_randomise();
+	else if(type == "dfs")
+		dfs_randomize();
 	gameArea.start();
 }
 var gameArea = {

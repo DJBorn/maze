@@ -8,13 +8,13 @@
 	<body>
 		<div id="container">
 			<h1>Maze Generator</h1>
-			<p>with DFS algorithm.</p>
 			Height
 			<input id="height" type="number" name="height" min="1" max="100" value="10">
 			Width
 			<input id="width" type="number" name="width" min="1" max="100" value="10">
 			<br><br>
-			<button onclick="generateMaze()">Generate Maze</button>
+			<button onclick="generateMaze('dfs')">Generate DFS Maze</button>
+			<button onclick="generateMaze('kruskal')">Generate Kruskal Maze</button>
 			<div style="height: 20px"></div>
 			<div id="maze"></div>
 		</div>
