@@ -13,12 +13,12 @@ function dfs_randomize() {
 		var cur = stack[stack.length-1];
 		visited[cur] = true;
 		var directions = [];
-		
+
 		var up = cur-width;
 		var right = cur+1;
 		var left = cur-1;
 		var down = cur+width;
-		
+
 		// Pick only available adjacent cells
 		if(up >= 0 && !visited[up])
 			directions.push(up);
@@ -43,7 +43,7 @@ function kruskal_randomise() {
 	var set = [];
 	var walls = [];
 
-	// Make a list of all walls
+	// Make a list of all walls and sets
 	for(let i = 0; i < width*height; i++) {
 		maze[i] = [];
 		set[i] = i;
@@ -55,7 +55,7 @@ function kruskal_randomise() {
 
 	// Shuffle the walls
 	for(let i = walls.length; i > 1; i--) {
-		var index = Math.floor((Math.random() * i));
+		var index = Math.floor(Math.random() * i);
 		var temp = walls[i-1];
 		walls[i-1] = walls[index];
 		walls[index] = temp;
@@ -78,6 +78,57 @@ function kruskal_randomise() {
 	}
 }
 
+function prim_randomize() {
+	// Add first wall
+	var walls = [[0, 1], [0, width]];
+	var visited = [true];
+	maze[0] = [];
+	
+	for(let i = 1; i < width*height; i++) {
+		maze[i] = [];
+		visited[i] = false;
+	}
+	
+	while(walls.length > 0){
+		// Pick a random wall inside the maze
+		var next = Math.floor(Math.random() * walls.length);
+		var visitedCell = null;
+		var newCell = null;
+		
+		// Determine the cell thats part of the maze and the cell not part of the maze
+		if(visited[walls[next][0]] && !visited[walls[next][1]]) {
+			visitedCell = walls[next][0];
+			newCell = walls[next][1];
+		}
+		else if(!visited[walls[next][0]] && visited[walls[next][1]]) {
+			visitedCell = walls[next][1];
+			newCell = walls[next][0];
+		}
+		
+		// If the wall is separating a non maze and a maze cell, remove the wall and add the new cells walls
+		if(visitedCell != null) {
+			visited[newCell] = true;
+			var up = newCell-width;
+			var right = newCell+1;
+			var left = newCell-1;
+			var down = newCell+width;
+			
+			if(up >= 0 && up != visitedCell)
+				walls.push([newCell, up]);
+			if(right%width != 0 && right != visitedCell)
+				walls.push([newCell, right]);
+			if(down < height*width && down != visitedCell)
+				walls.push([newCell, down]);
+			if(left%width != width-1 && left >= 0 && left != visitedCell)
+				walls.push([newCell, left]);
+			maze[visitedCell].push(newCell);
+			maze[newCell].push(visitedCell);
+			visited[newCell] = true;
+		}
+		walls.splice(next, 1);
+	}
+}
+
 function generateMaze(type) {
 	height = Number(document.getElementById("height").value);
 	width = Number(document.getElementById("width").value);
@@ -91,6 +142,8 @@ function generateMaze(type) {
 		kruskal_randomise();
 	else if(type == "dfs")
 		dfs_randomize();
+	else if(type == "prim")
+		prim_randomize();
 	gameArea.start();
 }
 var gameArea = {
@@ -112,7 +165,7 @@ function drawMaze() {
 	ctx.fillRect(0 - wallWidth/2, 0, wallWidth, height * wallSize);
 	ctx.fillRect(0, height*wallSize - wallWidth/2, (width-1) * wallSize, wallWidth);
 	ctx.fillRect(width*wallSize - wallWidth/2, 0, wallWidth, height * wallSize);
-	
+
 	// Draw cell walls
 	var cell = 0;
 	for(let j = 0; j < height; j++) {
