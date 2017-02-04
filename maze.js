@@ -132,8 +132,8 @@ function prim_randomize() {
 function generateMaze(type) {
 	height = Math.floor(Number(document.getElementById("height").value));
 	width = Math.floor(Number(document.getElementById("width").value));
-	if(height < 1 || width < 1) {
-		document.getElementById("maze").innerHTML = "Width and Height must at least be 1";
+	if(height < 2 || width < 2) {
+		document.getElementById("maze").innerHTML = "Width and Height must at least be 2";
 		return;
 	}
 	else if(height > 100 || width > 100) {
