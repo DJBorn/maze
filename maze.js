@@ -130,10 +130,14 @@ function prim_randomize() {
 }
 
 function generateMaze(type) {
-	height = Number(document.getElementById("height").value);
-	width = Number(document.getElementById("width").value);
+	height = Math.floor(Number(document.getElementById("height").value));
+	width = Math.floor(Number(document.getElementById("width").value));
 	if(height < 1 || width < 1) {
 		document.getElementById("maze").innerHTML = "Width and Height must at least be 1";
+		return;
+	}
+	else if(height > 100 || width > 100) {
+		document.getElementById("maze").innerHTML = "Width and Height must not exceed 100";
 		return;
 	}
 	else
